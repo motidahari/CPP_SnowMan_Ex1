@@ -1,5 +1,9 @@
 #include <iostream>
 #include <string>
+#include <iostream>
+#include <stdexcept>
+#include "snowman.hpp"
+
 using namespace std;
 
 string Hat[4] = {" _===_\n", "  ___\n .....\n", "   _ \n  /_\\\n", "  ___ \n (_*_)\n"};
@@ -31,63 +35,58 @@ int getIndex(char c){
   }
   return -1;
 }
-string snowman(string str){
-  
+string snowman(int num){
+  std::string str = "";
+  str += std::to_string(num);
+  string result = "";
+
   int UpLeftArm = (str[4] == '2') ? 1 : 0;
   int UpRightArm = (str[5] == '2') ? 1 : 0;
-  // cout << "UpLeftArm = " << UpLeftArm << "\n";
-  // cout << "UpRightArm = " << UpRightArm <<  "\n";
 
   for (size_t i = 0; i < str.size(); i++){
     int index = getIndex(str[i]);
     if (i == 0){
-      cout << Hat[index];
+      result += Hat[index];
     }
     else if (i == 1){
       if (UpLeftArm == 1){
-        cout << LeftArm[4] << "(";
-        cout << LeftEye[index];
+        result += LeftArm[4] + "(" + LeftEye[index];
       }else{
-        cout << " (" << LeftEye[index];
+       result += " (" + LeftEye[index];
       }
     }
     else if (i == 2){
-      cout << Mouth[index];
+      result += Mouth[index];
     }else if (i == 3) {
       if (UpRightArm == 1){
-        cout << RightEye[index] << ")" << RightArm[4] << "\n";
+        result += RightEye[index] + ")" + RightArm[4] + "\n";
       }else{
-        cout << RightEye[index] << ")\n";
+        result += RightEye[index] + ")\n";
       }
     }
     else if (i == 4){
       if (UpLeftArm != 1){
-        cout << LeftArm[index];
+        result += LeftArm[index];
       }else{
-        cout << " ";
+        result += " ";
       }
     }
     else if (i == 5){
-      // cout << "(" << Torso[index] << ")";
       if (UpRightArm != 1){
-        cout << "(" << Torso[index] << ")";
+        result += "(" + Torso[index] + ")";
       }else{
-        cout << "(" << Torso[index] << ")\n";
+        result += "(" + Torso[index] + ")\n";
       }
     }else if (i == 6){
-      // if (UpRightArm != 1){
-      //   cout << RightArm[index] << "\n";
-      // }
       if (UpRightArm != 1){
-        cout << RightArm[index] << "\n";
+        result += RightArm[index] + "\n";
       }
     }
     else if (i == 7){
-      cout << Base[index];
+      result += Base[index];
     }
   }
-
-
+  return result;  
 }
 
 void printSnowMan(string str){
