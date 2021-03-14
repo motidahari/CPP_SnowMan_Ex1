@@ -1,44 +1,78 @@
-/**
- * An example of how to write unit tests.
- * Use this as a basis to build a more complete Test.cpp file.
- * 
- * IMPORTANT: Please write more tests - the tests here are only for example and are not complete.
- *
- * AUTHORS: <Please write your names here>
- * 
- * Date: 2021-02
- */
-
+ /**
+  * Snowman Tests
+  * CPP course, Ariel University
+  * For the full documentation visit: https://codegolf.stackexchange.com/q/49671/12019        
+  * 
+  * Created by: Moti Dahari
+  * https://github.com/motidahari
+  */
 #include "doctest.h"
 #include "snowman.hpp"
-using namespace ariel;
-
 #include <string>
 #include <algorithm>
+
+using namespace ariel;
 using namespace std;
 
 /**
  * Returns the input string without the whitespace characters: space, newline and tab.
  * Requires std=c++2a.
  */
-string nospaces(string input) {
-	std::erase(input, ' ');
-	std::erase(input, '\t');
-	std::erase(input, '\n');
-	std::erase(input, '\r');
-	return input;
+  string nospaces(string str){
+    str.erase(remove(str.begin(), str.end(), ' '), str.end());
+    str.erase(remove(str.begin(), str.end(), '\t'), str.end());
+    str.erase(remove(str.begin(), str.end(), '\n'), str.end());
+    str.erase(remove(str.begin(), str.end(), '\r'), str.end());
+    return str;
+  }
+
+/**
+ * This test runs on an array of CorrectNumbers (whose range is not 1-4)
+ */
+TEST_CASE("Check Correct Numbers"){
+    int size = sizeof(CorrectNumbers)/sizeof(CorrectNumbers[0]);
+  for (size_t i = 0; i < size; i++){
+    CHECK(nospaces(snowman(CorrectNumbers[i])) == nospaces(snowMan2[i]));
+  }
 }
 
-
-TEST_CASE("Good snowman code") {
-    CHECK(nospaces(snowman(11114411)) == nospaces("_===_\n(.,.)\n( : )\n( : )"));
-    /* Add more checks here */
+/**
+ * This test runs on an array of IncorrectNumbers (whose range is not 1-4)
+ */
+TEST_CASE("Check Incorrect Numbers"){
+  int size = sizeof(IncorrectNumbers)/sizeof(IncorrectNumbers[0]);
+  for (size_t i = 0; i < size; i++){
+    CHECK_THROWS(snowman(IncorrectNumbers[i]));
+  }
 }
 
-TEST_CASE("Bad snowman code") {
-    CHECK_THROWS(snowman(555));
-    /* Add more checks here */
+/**
+ * This test runs on an array of NegativeNumbers and check the function snowman
+ */
+TEST_CASE("Check Negative Numbers"){
+  int size = sizeof(NegativeNumbers)/sizeof(NegativeNumbers[0]);
+  for (size_t i = 0; i < size; i++){
+    CHECK_THROWS(snowman(NegativeNumbers[i]));
+  }
 }
 
+/**
+ * This test runs on an array of smallerThan8Characters and check the function snowman
+ */
+TEST_CASE("Check smaller Than 8 Characters Numbers"){
+  int size = sizeof(smallerThan8Characters)/sizeof(smallerThan8Characters[0]);
+  for (size_t i = 0; i < size; i++){
+    CHECK_THROWS(snowman(smallerThan8Characters[i]));
+  }
+}
 
-/* Add more test cases here */
+/**
+ * This test runs on an array of biggerThan8Characters and check the function snowman
+ */
+TEST_CASE("Check bigger Than 8 Characters Numbers"){
+  int size = sizeof(biggerThan8Characters)/sizeof(biggerThan8Characters[0]);
+  for (size_t i = 0; i < size; i++){
+    CHECK_THROWS(snowman(biggerThan8Characters[i]));
+  }
+}
+
