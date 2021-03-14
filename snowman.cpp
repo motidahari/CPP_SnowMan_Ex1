@@ -1,4 +1,4 @@
- /**
+/**
   * Snowman
   * Create a snowman by getting a positive number with 8 digits in the range of 1-4
   * CPP course, Ariel University
@@ -8,27 +8,34 @@
   * https://github.com/motidahari
   */
  
+ 
 #include <iostream>
 #include <string>
-// #include <iostream>
 #include <stdexcept>
 #include "snowman.hpp"
 #include <regex>
 #include <algorithm>
 
 using namespace std;
-//Proper length of the number
 const int ProperNumberOfCharacters = 8;
-
-//arrays that represents a string of parts of the snowman's body
-const string Hat[4] = {" _===_\n", "  ___\n .....\n", "   _ \n  /_\\\n", "  ___ \n (_*_)\n"};
-const string LeftEye[4] = {".", "o", "O", "-"};
-const string Mouth[4] = {",", ".", "_", " "};
-const string RightEye[4] = {".", "o", "O", "-"};
-const string LeftArm[5] = {"<", "\\", "/", " ", "\\"};
-const string Torso[4] = {" : ", "] [", "> <", "   "};
-const string RightArm[5] = {">", "/", "\\", " ", "/"};
-const string Base[4] = {" ( : )", " (   )", " (___)", " (   )"};
+const int ascii0 = 48;
+const int ascii1 = 49;
+const int ascii2 = 50;
+const int ascii3 = 51;
+const int ascii4 = 52;
+const int falseNum = -1;
+const int trueNum = 1;
+enum numbers { num0, num1, num2, num3, num4, num5 ,num6, num7, num8, num9, num10};
+enum indexs { Hat0, Mouth1, LeftEye2, RightEye3, LeftArm4, RightArm5 ,Torso6, Base7};
+std::array<int,ProperNumberOfCharacters> arr;
+const vector<string> Hat = {" _===_\n", "  ___\n .....\n", "   _ \n  /_\\\n", "  ___ \n (_*_)\n"};
+const vector<string> Mouth = {",", ".", "_", " "};
+const vector<string> LeftEye = {".", "o", "O", "-"};
+const vector<string> RightEye = {".", "o", "O", "-"};
+const vector<string> LeftArm = {"<", "\\", "/", " "};
+const vector<string> RightArm = {">", "/", "\\", " "};
+const vector<string> Torso = {" : ", "] [", "> <", "   "};
+const vector<string> Base = {" ( : )", " (\" \")", " (___)", " (   )"};
 
 /**
  * getIndex - Gets a char which represents a number (from ascii table) and returns its numeric value less 1
@@ -36,25 +43,32 @@ const string Base[4] = {" ( : )", " (   )", " (___)", " (   )"};
  * @param: c - char which represents a number
  * @return: index - The value from the ascii table is less than 1
  */
+
 int getIndex(char c){
-  int ascii = c;
-  if (ascii >= 49 && ascii <= 52){
+  if (c >= ascii1 && c <= ascii4){
+    return (c-'0')-1; 
+  } 
+  return falseNum;
+}
+int getIndex2(char c){
+  int ascii = (unsigned char)c;
+  if (ascii >= ascii1 && ascii <= ascii4){
     switch (ascii - 1){
-    case 48:
-      return 0;
+    case ascii0:
+      return num0;
       break;
-    case 49:
-      return 1;
+    case ascii1:
+      return num1;
       break;
-    case 50:
-      return 2;
+    case ascii2:
+      return num2;
       break;
-    case 51:
-      return 3;
+    case ascii3:
+      return num3;
       break;
     }
   }
-  return -1;
+  return falseNum;
 }
 
 
@@ -64,12 +78,11 @@ int getIndex(char c){
  * @return: 1 - if it is a positive number, -1 if isn't.
  */
 int checkNegativeNumber(int num){
-  if(num <= 0){
-    throw invalid_argument{"Error: The number is a negative number\n"};
-    return -1;
-  }else{
-    return 1;
+  if(num > num0){
+    return trueNum;
   }
+  throw invalid_argument{"Error: The number is a negative number\n"};
+  return falseNum;
 }
 
 /**
@@ -77,15 +90,18 @@ int checkNegativeNumber(int num){
  * @param: x - A String
  * @return: 1 - If the string length is exactly 8, -1 if isn't.
  */
-int checkSize(string x){
+int checkSize(string const & x){
+  std::string msg = "1";
   if(x.size() > ProperNumberOfCharacters){
-    throw invalid_argument{"Error: The number of characters is greater than 8\n"};
-    return -1;
+    msg = "Error: The number of characters is greater than 8\n";
   }else if(x.size() < ProperNumberOfCharacters){
-    throw invalid_argument{"Error: The number of characters is less than 8\n"};
-    return -1;
+    msg = "Error: The number of characters is less than 8\n";
   }
-  return 1;
+  if(msg.size() <= 1){
+    return trueNum;
+  }
+  throw invalid_argument{msg};
+  return falseNum;
 }
 
 /**
@@ -94,13 +110,18 @@ int checkSize(string x){
  * @return: 1 - If the string is really in the 1-4 range, -1 if isn't.
  */
 int checkValue(string x){
+  int result = 1;
   for (size_t i = 0; i < x.size(); i++){
-    if (x[i] < 49 || x[i] > 52){
-      throw invalid_argument{"Error: The input is not in the 1-4 range\n"};
-      return -1;
+    if (x[i] < ascii1 || x[i] > ascii4){
+      result = falseNum;
+      break;
     }
   }
-  return 1;
+  if(result == trueNum){
+    return trueNum;
+  }
+  throw invalid_argument{"Error: The input is not in the 1-4 range\n"};
+  return falseNum;
 }
 
 
@@ -110,10 +131,10 @@ int checkValue(string x){
  * @return: number - Positive number
  */
 int getRandomNum(int size) {//1-4
-    int number = 0;
-    for (size_t i = 0; i < size; i++){
-        number *= 10;
-        number += (rand() % 4 + 1);//generate number between 1 and 4:
+    int number = num0;
+    for (size_t i = num0; i < size; i++){
+        number *= num10;
+        number += (rand() % num4 + num1);//generate number between 1 and 4:
     }
     return number;
 }
@@ -124,92 +145,60 @@ int getRandomNum(int size) {//1-4
  * @return: number - Positive number
  */
 int getRandomNumFrom1To10(int size) {//1-10
-    int number = 0;
-    for (size_t i = 0; i < size; i++){
-        number *= 10;
-        number += (rand() % 4 + 1);//generate number between 1 and 10:
+    int number = num0;
+    for (size_t i = num0; i < size; i++){
+        number *= num10;
+        number += (rand() % num4 + num1);//generate number between 1 and 10:
     }
     return number;
 }
 
 namespace ariel{
   /**
-   * snowman - A function that receives a number, checks whether the input is correct, if the input is 
+   * snowman - a function that receives a number, checks whether the input is correct, if the input is 
    * incorrect it throws an error, if the input is correct it returns a string representing a snowman 
    * which is constructed by each character in the string
-   * @param: num - A number
-   * @return: snowMan - A string representing a snowman, empty string and trow error if isn't.
+   * @param: num - a number
+   * @return: snowMan - a string representing a snowman, empty string and trow error if isn't.
    */
-  string snowman(int num){
-    string str = std::to_string(num);
-    string result = "";
 
-    if(checkNegativeNumber(num) != -1 && checkValue(str) != -1 && checkSize(str) != -1){
-      int UpLeftArm = (str[4] == '2') ? 1 : 0;
-      int UpRightArm = (str[5] == '2') ? 1 : 0;
-      for (size_t i = 0; i < str.size(); i++){
+string snowman(int num){
+    string str = std::to_string(num);
+    std::string result;
+    if(checkNegativeNumber(num) != falseNum && checkValue(str) != falseNum && checkSize(str) != falseNum){
+      std::string number;
+      int i = 0;
+      for (auto& e : arr) {
         int index = getIndex(str[i]);
-        if (i == 0){
-          result += Hat[index];
-        }else if (i == 1){
-          if (UpLeftArm == 1){
-            result += LeftArm[4] + "(" + LeftEye[index];
-          }else{
-          result += " (" + LeftEye[index];
-          }
-        }else if (i == 2){
-          result += Mouth[index];
-        }else if (i == 3) {
-          if (UpRightArm == 1){
-            result += RightEye[index] + ")" + RightArm[4] + "\n";
-          }else{
-            result += RightEye[index] + ")\n";
-          }
-        }else if (i == 4){
-          if (UpLeftArm != 1){
-            result += LeftArm[index];
-          }else{
-            result += " ";
-          }
-        }else if (i == 5){
-          if (UpRightArm != 1){
-            result += "(" + Torso[index] + ")";
-          }else{
-            result += "(" + Torso[index] + ")\n";
-          }
-        }else if (i == 6){
-          if (UpRightArm != 1){
-            result += RightArm[index] + "\n";
-          }
-        }
-        else if (i == 7){
-          result += Base[index];
-        }
+        number += std::to_string(index);
+        e = index;
+        ++i;
       }
-      return result;  
+      const int UpLeftArm = (str[num4] == '2') ? num1 : num0;
+      const int UpRightArm = (str[num5] == '2') ? num1 : num0;
+      result += Hat[arr[num0]];
+      result += (UpLeftArm == trueNum) ? LeftArm[arr[num4]] + "(" + LeftEye[arr[num2]] : " (" + LeftEye[arr[num2]];
+      result += Mouth[arr[num1]];
+      result += (UpRightArm == trueNum) ? RightEye[arr[num3]] + ")" + RightArm[arr[num5]] + "\n" : RightEye[arr[num3]] + ")\n";
+      result += (UpLeftArm != trueNum) ? LeftArm[arr[num4]] : " ";
+      result += (UpRightArm != trueNum) ? "(" + Torso[arr[num6]] + ")" + RightArm[arr[num5]] + "\n": "(" + Torso[arr[num6]] + ")\n";
+      result += Base[arr[num7]] + "\n";
     }
-    return "";
+    return result;
   }
+
+/**
+ * Returns the input string without the whitespace characters: space, newline and tab.
+ * Requires std=c++2a.
+ */
+  string nospaces(string str){
+    str.erase(remove(str.begin(), str.end(), ' '), str.end());
+    str.erase(remove(str.begin(), str.end(), '\t'), str.end());
+    str.erase(remove(str.begin(), str.end(), '\n'), str.end());
+    str.erase(remove(str.begin(), str.end(), '\r'), str.end());
+    return str;
+  }
+
 };
 
 
-// int main(){
-
-//   cout << ariel::snowman(33232124);
-//   // int size = sizeof(CorrectNumbers)/sizeof(CorrectNumbers[0]);
-//   // cout << "size = " << size ;
-//   // string a = "";
-//   // // cout << "const int arr[] = {";
-//   // a +=  "const string snowman[] = {";
-//   // for (size_t i = 0; i < size; i++){
-//   //     // a +=  "\"" + nospaces(ariel::snowman(CorrectNumbers[i])) + "\"" + ",\n";
-//   //     a += "val = " ;
-//   //     a +=  "\n" ;
-//   //     a +=  "\"" + ariel::snowman(CorrectNumbers[i]) + "\"" + ",\n";
-//   //   // cout << ariel::snowman(CorrectNumbers[i]) << ",";
-//   // }
-//   // a +=   "};";
-//   // // cout << "}";
-//   // cout << a;
-//   return 0;
-// }
